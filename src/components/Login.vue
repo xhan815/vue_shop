@@ -73,8 +73,6 @@ export default {
         if (res.meta.status !== 200) {
           return this.$message.error('登录失败')
         }
-        this.$message.success('登录成功')
-        console.log(res)
         // 1将登录之后的token 保存到sessionStorage 中
         // 1.1项目中除了登录之外的Api接口，必须在登录之后才能访问
         // 1.2token 只应在当前网站打开期间生效，所以 将tonke 保存在sessionStorage 中

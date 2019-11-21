@@ -1,5 +1,7 @@
 <template>
-  <div></div>
+  <div>
+    12315646
+  </div>
 </template>
 <script>
 export default {}
