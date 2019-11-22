@@ -31,7 +31,7 @@
         >
       </el-row>
       <!-- 用户列表区域 -->
-      <el-table border :data="userList">
+      <el-table border :data="userList" stripe>
         <el-table-column type="index"> </el-table-column>
         <el-table-column prop="username" label="姓名"> </el-table-column>
         <el-table-column prop="email" label="邮箱"> </el-table-column>
@@ -68,9 +68,10 @@
               :enterable="false"
             >
               <el-button
-                type="danger"
+                type="warning"
                 icon="el-icon-setting"
                 size="mini"
+                @click="setRolesDialog(scope.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -148,6 +149,31 @@
           <el-button type="primary" @click="editUserInfo">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 分配角色对话框 -->
+      <el-dialog
+        title="分配角色"
+        :visible.sync="setRolesDialogVisible"
+        width="50%"
+      >
+        <p><label>当前的用户 : </label>{{ userInfo.username }}</p>
+        <p><label>当前的角色 : </label>{{ userInfo.role_name }}</p>
+        <p>
+          <label>分配新角色 : </label>
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="setRolesDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -189,6 +215,14 @@ export default {
         email: '',
         mobile: ''
       },
+      // 控制分配角色对话框的显示与隐藏
+      setRolesDialogVisible: false,
+      // 当前用户信息
+      userInfo: {},
+      // 所有角色列表
+      rolesList: [],
+      // 当前选中的角色Id
+      selectedRoleId: '',
       // 添加用户的验证规则
       addFormRules: {
         username: [
@@ -351,22 +385,37 @@ export default {
       }
       this.$message.success('成功删除用户')
       this.getUsersList()
+    },
+    // 点击按钮获取当前用户信息
+    async setRolesDialog(userInfo) {
+      this.userInfo = userInfo
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色列表失败')
+      }
+      this.rolesList = res.data
+      console.log(this.rolesList)
+      this.setRolesDialogVisible = true
+    },
+    // 点击按钮分配角色
+    async saveRoleInfo() {
+      if (!this.selectedRoleId) {
+        this.$message.error('请选择分配的角色')
+      }
+      const { data: res } = await this.$http.put(
+        `users/${this.userInfo.id}/role`,
+        {
+          rid: this.selectedRoleId
+        }
+      )
+      if (res.meta.status !== 200) {
+        this.$message.error('分配角色失败')
+      }
+      this.$message.success('分配角色成功')
+      this.getUsersList()
+      this.setRolesDialogVisible = false
     }
   }
 }
 </script>
-<style lang="less" scope>
-.el-breadcrumb {
-  margin-bottom: 15px;
-}
-.el-card {
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2) !important;
-}
-.el-table {
-  margin-top: 15px;
-  font-size: 12px;
-}
-.el-pagination {
-  margin-top: 15px;
-}
-</style>
+<style lang="less" scope></style>
