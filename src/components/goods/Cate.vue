@@ -19,6 +19,7 @@
         border
         :expand-type="false"
         :show-row-hover="false"
+        ref="ediRef"
       >
         <template slot="isok" slot-scope="scope">
           <i
@@ -53,7 +54,12 @@
         </template>
       </tree-table>
       <!-- 添加分类对话框 -->
-      <el-dialog title="添加分类" :visible.sync="addDialogVisible" width="50%">
+      <el-dialog
+        title="添加分类"
+        :visible.sync="addDialogVisible"
+        width="50%"
+        @close="resetFields"
+      >
         <el-form
           ref="addCateRef"
           :model="addCateForm"
@@ -291,6 +297,10 @@ export default {
       this.$message.success('添加分类成功')
       this.getCtesList()
       this.addDialogVisible = false
+    },
+    // 监听添加分类对话框关闭事件
+    resetFields() {
+      this.$refs.addCateRef.resetFields()
     },
     // 点击按钮 删除分类
     async removeRolesById(id) {
