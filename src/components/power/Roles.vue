@@ -90,12 +90,12 @@
       </el-table>
       <!-- 添加角色对话框 -->
       <el-dialog
-        title="修改用户"
+        title="添加角色"
         :visible.sync="addDialogVisible"
         width="50%"
         @close="resetaddForm"
       >
-        <!-- 用户修改内容 -->
+        <!-- 用户添加的内容 -->
         <el-form
           :model="addForm"
           label-width="70px"
@@ -116,7 +116,7 @@
       </el-dialog>
       <!-- 修改角色对话框 -->
       <el-dialog
-        title="修改用户"
+        title="修改角色"
         :visible.sync="editDialogVisible"
         width="50%"
         @close="resetEditForm"
